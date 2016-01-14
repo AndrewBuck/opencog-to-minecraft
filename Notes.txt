@@ -1,0 +1,28 @@
+In order to check to see if some area is a house (on level ground), see if you
+can draw a closed loop around the area where no more than 1 square in a row is
+'air' on this outer loop (these 1 block sections are the doors/windows).  If
+you can repeat this process on the level above the one you found a closed loop
+on, then you have a wall at least 2 blocks high.  Then similar code can be used
+to check for a roof.
+
+--------------------------------------------------------------------------------
+
+Periodically loop over all the blocks in the map and for each block check that
+the two tiles above it are clear.  If so, then mark the block as being part of
+the global "floor".  Having a specific subset of the tiles marked as floor like
+this allows routing calculations to be performed much more quickly by checking
+tiles only in the "floor" subset as these are the only ones that can be routed
+along anyway.  The floor is not necessarily contiguous, and in some parts of
+the world you will have many floors on many different levels which overlap
+eachother.
+
+Every so often in the floor (maybe once every 10 to 20 blocks in the x and z
+dimensions) have a local "routing node" which serves as a sort of hub to the
+surrounding tiles.  When a routing node is established you can try and route
+from it to the surrounding routing nodes and from that node to each other
+compute an optimum routing path.  These paths can then be stored and recalled
+as needed for long distance travel.  Basically just compute a short path to the
+nearest routing node and then do a graph based routing algorithm on the node
+graph to get to the closest node to where you want to go.  The actual path of
+tiles the bot travels along is then just the sum of all these short routes.
+This should allow very fast routing calculations over long distances.
